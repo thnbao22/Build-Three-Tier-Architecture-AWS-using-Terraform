@@ -1,11 +1,9 @@
-# Launch Template for Bastion Host
-
-
 
 data "aws_ssm_parameter" "three_tier_ami" {
   name = "ssm_three_tier"
 }
 
+# Launch Template for Bastion Host
 # Provides an EC2 launch template resource.
 # Before you can create an Auto Scaling Group, you need to create and configure the launch template
 # Explanation
@@ -74,7 +72,24 @@ resource "aws_launch_template" "three_tier_app" {
   }
 }                 
 
+# 
 data "aws_alb_target_group" "three_tier_tg" {
   name = var.lb_tg_name
   
+}
+
+# Define Auto Scaling Group for app 
+resource "aws_autoscaling_group" "three_tier_app" {
+  name = "three_tier_app"
+  min_size = 2
+  max_size = 3
+  desired_capacity = 3
+  vpc_zone_identifier = var.public_subnets
+  
+  target_group_arns = [data.aws_alb_target_group.three_tier_app.arn]
+  
+  launch_template {
+    id = aws_launch_template.three_tier_bastion.id
+    version = "$Latest"
+  } 
 }
