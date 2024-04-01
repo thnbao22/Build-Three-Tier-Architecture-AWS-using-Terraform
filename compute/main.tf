@@ -48,10 +48,10 @@ resource "aws_autoscaling_group" "three_tier_bastion" {
 
   # Note: Either id or name must be specified
   launch_template {
-    # (Optimal) Id of the launch Template we use for Bastion Host
+    # (Optional) Id of the launch Template we use for Bastion Host
     id = aws_launch_template.three_tier_bastion.id
     
-    # (Optimal) Template version 
+    # (Optional) Template version 
     version = "$Latest"
   }
 }
@@ -76,7 +76,7 @@ resource "aws_launch_template" "three_tier_frontend_app" {
 
   # Instead of SSH into the EC2 instance, you can install apache server before you launch the instance.
   # So that you don't waste time to ssh into instance and run the script to install apache server
-  # Explanation about the attribute "user_data" on Harshicop: (Optimal) The base64-encoded user data to provide when launching the instance.
+  # Explanation about the attribute "user_data" on Harshicop: (Optional) The base64-encoded user data to provide when launching the instance.
   
   user_data = filebase64("install_apache.sh")
 
@@ -117,6 +117,7 @@ resource "aws_autoscaling_group" "three_tier_frontend_app" {
   } 
 }
 
+# Define launch Template for BE app
 resource "aws_launch_template" "three_tier_backend_app" {
   
   # name_prefix: (Optional) Creates a unique name beginning with the specified prefix.
@@ -140,7 +141,7 @@ resource "aws_launch_template" "three_tier_backend_app" {
   }
 }             
 
-
+# define Auto Scaling Group for BE app
 resource "aws_autoscaling_group" "three_tier_backend_app" {
   name = "three_tier_backend_app"
   min_size = 2
