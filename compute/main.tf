@@ -11,13 +11,14 @@ resource "aws_launch_template" "three_tier_bastion" {
   
   # name_prefix: (Optional) Creates a unique name beginning with the specified prefix.
   name_prefix = "three_tier_bastion"
-  
+
   # In your launch template you need to specify an instance type. Example: t2.micro
   instance_type = var.instance_type
 
   # The Image Id you want to launch the instance. Example: Amazon Linux 2023 AMI, ...
   image_id = data.aws_ssm_parameter.three_tier_ami.value
   
+  # Becasue we launch the bastion host in Public Subent in a VPC so we gonna use the attribute vpc_security_group_ids instead of security_group_names
   vpc_security_group_ids = [var.bastion_sg]
 
   # The key name to use for the instance
@@ -29,15 +30,29 @@ resource "aws_launch_template" "three_tier_bastion" {
 }                 
 
 
+# Define Auto Scaling Group for Bastion Host
 resource "aws_autoscaling_group" "three_tier_bastion" {
+  # Name of the Auto Scaling Group
   name = "three_tier_bastion"
+
+  # (Required) Minimum size of the Auto Scaling Group 
   min_size = 1
+
+  # (Required) Maximum size of the Auto Scaling Group
   max_size = 1
+
+  # Define the number of EC2 instances that should be running in the groups
   desired_capacity = 1
+
+  # List of subnet IDs to launch resources in. Here we launch instance in Public Subnets
   vpc_zone_identifier = var.public_subnets
 
+  # Required: Either id or name must be specified
   launch_template {
+    # Id of the launch Template we use for Bastion Host
     id = aws_launch_template.three_tier_bastion.id
+    
+    # (Optimal) Template version 
     version = "$Latest"
   }
 }
@@ -73,7 +88,7 @@ resource "aws_launch_template" "three_tier_frontend_app" {
   }
 }                 
 
-# 
+# The attribute aws_alb_target_group provides information about a Load Balancer Target Group
 data "aws_alb_target_group" "three_tier_tg" {
   name = var.lb_tg_name
   
