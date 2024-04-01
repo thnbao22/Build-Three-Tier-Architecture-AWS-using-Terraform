@@ -143,17 +143,26 @@ resource "aws_launch_template" "three_tier_backend_app" {
 
 # define Auto Scaling Group for BE app
 resource "aws_autoscaling_group" "three_tier_backend_app" {
+  # Name of the Auto Scaling Group
   name = "three_tier_backend_app"
+
+  # (Required) Minimum size of the Auto Scaling Group
   min_size = 2
+
+  # (Required) Maximum size of the Auto Scaling Group
   max_size = 3
+  
   desired_capacity = 2
   vpc_zone_identifier = var.private_subnets
 
-
+  # Set of aws_alb_target_group ARNs, for use with Application or Network Load Balancing
   target_group_arns = [data.aws_alb_target_group.three_tier_backend_app.arn]
   
+  # Decide which template you want your Auto Scaling Group to use
   launch_template {
+    # (Optional) ID of the Launch Template
     id = aws_launch_template.three_tier_backend_app.id
+    # Template version. Can be &Default or & Latest
     version = "$Latest"
   } 
 }
