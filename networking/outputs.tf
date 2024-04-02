@@ -14,24 +14,23 @@ output "rds_db_subnet_group" {
 output "rds_sg" {
     value = aws_security_group.three_tier_db_sg.id
 }
-
+# Output the id of FE SG
 output "frontend_app_sg" {
     value = aws_security_group.three_tier_frontend_sg.id
 }
-
+# Output the id of BE SG
 output "backend_app_sg" {
     value = aws_security_group.three_tier_backend_sg.id
 }
-
+# Output the id of LB SG
 output "lb_sg" {
     value = aws_security_group.three_tier_lb_sg.id
 }
-
+# Output the id of all your public subnets
 output "public_subnets" {
     value = aws_subnet.three_tier_public_subnet.*.id
 }
-
+# Output the id of all your private subnets
 output "private_subnets" {
-    value = aws_subnet.three_tier_private_subnet.*.id
-  
+    value = aws_subnet.three_tier_private_subnet.*.id 
 }
