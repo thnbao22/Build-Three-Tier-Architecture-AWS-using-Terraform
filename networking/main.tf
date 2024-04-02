@@ -314,6 +314,7 @@ resource "aws_security_group" "three_tier_backend_sg" {
 resource "aws_db_subnet_group" "three_tier_db_subnet_group" {
   # If count is true that means the subnet group is created otherwise it will not be created
   count       = var.db_subnet_group == true ? 1 : 0
+  # Name of the db subnet group
   name        = "three_tier_db_subnet_group"
 
   # (Required) A list of VPC subnet IDs.
@@ -323,8 +324,7 @@ resource "aws_db_subnet_group" "three_tier_db_subnet_group" {
   }
 }
 
-
-# # Security Group for RDS MySQL
+## Security Group for RDS MySQL
 resource "aws_security_group" "three_tier_db_sg" {
   # name of the DB SG
   name    = "three_tier_db_sg"
