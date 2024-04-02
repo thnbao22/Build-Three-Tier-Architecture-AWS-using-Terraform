@@ -86,6 +86,7 @@ resource "aws_launch_template" "three_tier_frontend_app" {
 }                 
 
 # The attribute aws_alb_target_group provides information about a Load Balancer Target Group
+# Retrive the name of the alb target group
 data "aws_alb_target_group" "three_tier_tg" {
   name = var.lb_tg_name
   
@@ -108,7 +109,7 @@ resource "aws_autoscaling_group" "three_tier_frontend_app" {
   # List of subnet IDs to launch resources in. Here we launch the frontend app in Public Subnets
   vpc_zone_identifier = var.public_subnets
 
-
+  # Set of aws_alb_target_group ARNs, for use with Application or Network Load Balancing
   target_group_arns = [data.aws_alb_target_group.three_tier_frontend_app.arn]
   
   launch_template {
