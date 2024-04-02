@@ -14,6 +14,11 @@ output "rds_db_subnet_group" {
 output "rds_sg" {
     value = aws_security_group.three_tier_db_sg.id
 }
+# Output the id of Bastion Host SG
+output "bastion_sg" {
+    value = aws_security_group.three_tier_bastion_sg
+}
+
 # Output the id of FE SG
 output "frontend_app_sg" {
     value = aws_security_group.three_tier_frontend_sg.id
