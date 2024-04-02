@@ -163,25 +163,32 @@ resource "aws_subnet" "three_tier_private_db" {
 }
 
 # Create Security Group
+# Security Group is stateful so it denies all inbound rules and allowws all outbound rules
 
 
-# Security Group for Bastion Host
+## Security Group for Bastion Host
 resource "aws_security_group" "three_tier_bastion_sg" {
-  name = "three_tier_bastion_sg"
-  vpc_id = aws_vpc.three_tier_vpc.id
+  # Name of the Security group for Bastion Host
+  name          = "three_tier_bastion_sg"
+
+  # Add description for Bastion SG
+  description   = "Allow SSH into Bastion Host"
+  vpc_id        = aws_vpc.three_tier_vpc.id
   
-  #define inbound rules
+  ## define inbound rules for Bastion SG
   ingress = {
 
-    # Define protocol for SSH into your Bastion Host
+    ### Define protocol for SSH into your Bastion Host
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_block  = var.cidr_block
+    cidr_block  = var.access_ip
   }
-  # Define outbound rules
+
+  ## Define outbound rules for Bastion SG
   egress = {
-    # Default rules
+
+    ### Default rules
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -189,3 +196,69 @@ resource "aws_security_group" "three_tier_bastion_sg" {
   }
 }
 
+# Define Security Group for Load Balancer
+resource "aws_security_group" "three_tier_lb_sg" {
+  # Name of the Load Balancer SG
+  name = "three_tier_lb_sg"
+
+  vpc_id = aws_vpc.three_tier_vpc.id
+
+  ## Define inbound rules for LB SG
+  ingress = {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_block  = ["0.0.0.0/0"]
+  } 
+
+  ## Define outbound rules for LB SG
+  egress = {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "tcp"
+    cidr_block  = ["0.0.0.0/0"]
+  }
+}
+
+# Define local value
+locals {
+  # Port 80: HTTP
+  port_in_80 = [
+    80
+  ]
+  # Port 22: SSH
+  port_in_22 = [
+    22
+  ]
+}
+
+
+## Security Group for FE app
+resource "aws_security_group" "three_tier_frontend_sg" {
+  # Name of the Security group for Frontend app
+  name          = "three_tier_frontend_sg"
+
+  # Add desciption for frontend SG
+  description   = "Allow SSH from Bastion Host"
+  vpc_id        = aws_vpc.three_tier_vpc.id
+
+  dynamic "ingress" {
+    for_each = toset(local.port_in_22)
+    content {
+      from_port = ingress.value
+      to_port = ingress.value
+      protocol = "tcp"
+      security_groups = [aws_security_group.three_tier_bastion_sg.id]
+    }
+  }
+
+  dynamic "ingress" {
+    for_each = toset(local.port_in_80)
+    content {
+      from_port = ingress.value
+      to_port = ingress.value
+      protocol = "tcp"
+      security_groups = [aws_security_group.three_tier_lb_sg.id]
+    }      
+  }
+}
