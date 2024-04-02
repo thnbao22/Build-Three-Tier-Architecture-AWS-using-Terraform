@@ -152,7 +152,10 @@ resource "aws_autoscaling_group" "three_tier_backend_app" {
   # (Required) Maximum size of the Auto Scaling Group
   max_size = 3
   
+  # The number of EC3 instances should be running in the group
   desired_capacity = 2
+
+  # The VPC zone identifier
   vpc_zone_identifier = var.private_subnets
 
   # Set of aws_alb_target_group ARNs, for use with Application or Network Load Balancing
