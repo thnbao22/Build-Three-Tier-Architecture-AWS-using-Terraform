@@ -4,6 +4,7 @@ provider "aws" {
   region = local.location
 }
 
+
 # Define local values u want to use
 locals {
   # Your instance type. t2.micro is free tier
