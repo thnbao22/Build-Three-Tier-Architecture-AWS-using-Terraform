@@ -312,7 +312,7 @@ resource "aws_security_group" "three_tier_backend_sg" {
 
 # Provides an RDS DB subnet group resource
 resource "aws_db_subnet_group" "three_tier_db_subnet_group" {
-  # If count is true that means the subnet group is created otherwise it will not be created
+  # If count is true that means the subnet group will be created otherwise it will not be created
   count       = var.db_subnet_group == true ? 1 : 0
   # Name of the db subnet group
   name        = "three_tier_db_subnet_group"
