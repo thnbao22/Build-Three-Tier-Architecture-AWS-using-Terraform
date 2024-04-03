@@ -51,9 +51,9 @@ resource "aws_lb_listener" "three_tier_lb" {
   load_balancer_arn   = aws_lb_target_group.three_tier_lb.arn
   
   # (Optional) Port on which the load balancer is listening
-  port                = 80
+  port                = var.port
   # (Optional) Protocol for connections from clients to the load balancer. 
-  protocol            = "HTTP"
+  protocol            = var.protocol
 
   # Required: Configuration block for default actions
   default_action {
