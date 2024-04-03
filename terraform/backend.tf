@@ -1,5 +1,6 @@
 terraform {
   backend "s3" {
+    # your S3 bucket 
     bucket = "charlesbucketlab"
     key    = "path/to/my/key"
     # Region: Singapore
