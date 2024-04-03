@@ -1,4 +1,4 @@
-output "alb_asg" {
+output "app_asg" {
   value = aws_autoscaling_group.three_tier_frontend_app
 }
 
