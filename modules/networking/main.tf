@@ -25,7 +25,9 @@ resource "aws_internet_gateway" "three_tier_InternetGateway" {
   
 }
 
-
+# The data_sources "aws_availability_zones" provides details about the Availability Zones (AZs) that are available to your AWS account
+# In this code below, "aws_availability_zones" data source is declared with no arguments
+# -> which means it will return all AZs that are available to your account in the current region.
 data "aws_availability_zones" "available" {
   
 }
