@@ -5,13 +5,11 @@
 ![ConnectPrivate](images/Three-Tier-Architecture.drawio.png)
 
 Run the following command on the Visual Studio Code Terminal
-{{< tabs >}}
-{{% tab name="Visual Studio Code Terminal" %}}
+
 ```
 terraform init
 ```
-{{% /tab %}}
-{{< /tabs >}}
+
 
 ![ConnectPrivate](images/screenshot-1712126023363.png)
 
