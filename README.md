@@ -15,7 +15,7 @@ terraform init
 
 if you encountered this issue, it would be the error that you haven't created your S3 bucket
 
-After you completed your S3 bucket, the issue will be gone
+After you completely create your S3 bucket, the issue will be gone
 ![ConnectPrivate](images/screenshot-1712126305020.png)
 
 I will make a demo on this project later :3
