@@ -16,7 +16,7 @@ output "rds_sg" {
 }
 # Output the id of Bastion Host SG
 output "bastion_sg" {
-    value = aws_security_group.three_tier_bastion_sg
+    value = aws_security_group.three_tier_bastion_sg.id
 }
 
 # Output the id of FE SG
