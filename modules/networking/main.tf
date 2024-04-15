@@ -179,23 +179,22 @@ resource "aws_security_group" "three_tier_bastion_sg" {
   vpc_id        = aws_vpc.three_tier_vpc.id
   
   ## define inbound rules for Bastion SG
-  ingress = {
+  ingress {
 
     ### Define protocol for SSH into your Bastion Host
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_block  = var.access_ip
+    cidr_blocks = [ "${var.access_ip}" ]
   }
 
   ## Define outbound rules for Bastion SG
-  egress = {
-
+  egress  {
     ### Default rules
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_block  = ["0.0.0.0/0"]
+    cidr_blocks = [ "0.0.0.0/0" ]
   }
 }
 
@@ -223,22 +222,6 @@ resource "aws_security_group" "three_tier_lb_sg" {
   }
 }
 
-# Define local value
-locals {
-  # Port 80: HTTP
-  port_in_80 = [
-    80
-  ]
-  # Port 22: SSH
-  port_in_22 = [
-    22
-  ]
-  # The MySQL port is 3306 by default
-  port_in_3306 = [
-    3306
-  ]
-}
-
 ## Security Group for FE app
 resource "aws_security_group" "three_tier_frontend_sg" {
   # Name of the Security group for Frontend app
@@ -252,37 +235,29 @@ resource "aws_security_group" "three_tier_frontend_sg" {
   # The for_each argument provides the complex value to iterate over.
   
   # Ingress rules for Bastion Host SG
-  dynamic "ingress" {
-    for_each = toset(local.port_in_22)
-    content {
-      from_port       = ingress.value
-      to_port         = ingress.value
-      protocol        = "tcp"
+  ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
 
-      # List of Security Groups. Here is the Bastion SG
-      security_groups = [aws_security_group.three_tier_bastion_sg.id]
-    }
+    # List of Security Groups. Here is the Bastion SG
+    security_groups = [aws_security_group.three_tier_bastion_sg.id]
   }
-
   # Ingress rules for Lb SG using port 80
-  dynamic "ingress" {
-    for_each = toset(local.port_in_80)
-    content {
-      from_port       = ingress.value
-      to_port         = ingress.value
-      protocol        = "tcp"
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
 
-      # List of Security Groups. Here is the LB SG
-      security_groups = [aws_security_group.three_tier_lb_sg.id]
-    }      
+    # List of Security Groups. Here is the LB SG
+    security_groups = [aws_security_group.three_tier_lb_sg.id]
   }
-
   # Egress rules for FE SG
-  egress = {
-    from_port         = 0
-    to_port           = 0
-    protocol          = "-1"
-    cidr_block        = ["0.0.0.0/0"]
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -292,23 +267,21 @@ resource "aws_security_group" "three_tier_backend_sg" {
   vpc_id  = aws_vpc.three_tier_vpc.id 
 
   # Ingress rules for FE SG using port 80
-  dynamic "ingress" {
-    for_each = toset(local.port_in_80)
-    content {
-      from_port       = ingress.value
-      to_port         = ingress.value
-      protocol        = "tcp"
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
 
-      # Choose the FE SG
-      security_groups = [aws_security_group.three_tier_frontend_sg.id]
-    }      
+    # Choose the FE SG
+    security_groups = [aws_security_group.three_tier_frontend_sg.id]
   }
+  
   # Egress rules for BE SG
-  egress = {
+  egress {
     from_port         = 0
     to_port           = 0
     protocol          = "-1"
-    cidr_block        = ["0.0.0.0/0"]
+    cidr_blocks       = [ "0.0.0.0/0" ]
   }
 }
 
@@ -333,20 +306,17 @@ resource "aws_security_group" "three_tier_db_sg" {
   vpc_id  = aws_vpc.three_tier_vpc
 
   # ingress rule for BE SG
-  dynamic "ingress" {
-    for_each = toset(local.port_in_3306)
-    content {
-      from_port         = ingress.value
-      to_port           = ingress.value
-      protocol          = "tcp"
-      security_groups   = [aws_security_group.three_tier_backend_sg.id]
-    }
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.three_tier_backend_sg.id]
   }
-
-  egress = {
+  # egress rule for BE SG
+  egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_block  = ["0.0.0.0/0"]
+    cidr_blocks = [ "0.0.0.0/0" ]
   }
 }
