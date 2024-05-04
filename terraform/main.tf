@@ -63,3 +63,13 @@ module "database" {
   db_final_snapshot     = true
   rds_sg                = module.netwotking.rds_sg
 }
+
+module "loadbalancing" {
+  source = "../modules/loadbalancing"
+  lb_sg = module.netwotking.lb_sg
+  public_subnets = module.netwotking.public_subnets
+  app_sg = module.compute.app_asg
+  port = 80
+  protocol = "HTTP"
+  vpc_id = module.netwotking.vpc_id
+}
